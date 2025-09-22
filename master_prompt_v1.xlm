@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<masterPrompt version="1.0">
+  <contextObjective>
+    <description>App profissional para equipe de cozinha (cozinha italiana em Trancoso, BR) com foco em controle de estoque, validade, geração de lista de compras e lembretes; interface prática/rápida e gamificada (sem recompensas explícitas).</description>
+    <integrations>
+      <integration>WhatsApp (resumos/alertas e envio de lista de compras)</integration>
+      <integration>Importação/Exportação via planilha e JSON</integration>
+    </integrations>
+    <alertWindows timezone="America/Bahia">
+      <time>10:00</time>
+      <time>16:00</time>
+    </alertWindows>
+  </contextObjective>
+
+  <personas>
+    <persona role="Chef" type="Admin">
+      <capabilities>Configura itens, perfis de validade, mínimos, fornecedores, horários de alerta; visualiza relatórios; gerencia usuários.</capabilities>
+    </persona>
+    <persona role="Cozinheiro(a)">
+      <capabilities>Registra produção/abertura/uso; consulta vencimentos e tarefas; marca checklists; gera requisição interna.</capabilities>
+    </persona>
+    <persona role="Compras/Estoque">
+      <capabilities>Recebe alertas; consolida e envia lista de compras via WhatsApp.</capabilities>
+    </persona>
+    <persona role="Gerente" optional="true">
+      <capabilities>Supervisiona módulos e acompanha gamificação.</capabilities>
+    </persona>
+  </personas>
+
+  <modules>
+    <module name="EstoqueEValidade" priority="core">
+      <profiles>
+        <field name="origem" values="Produzido|Comprado|Aberto|Descongelado"/>
+        <field name="ponto_partida" values="data_producao|data_compra|data_abertura|data_descongelamento"/>
+        <field name="shelf_life" unit="horas|dias"/>
+        <field name="lote_obrigatorio" type="boolean"/>
+        <field name="alertas_por_item" format="offset(D-n) + time(HH:MM)" defaultTime="10:00"/>
+        <field name="freeze_pause" type="boolean" default="true" appliesTo="bases,molhos,fundos,rotis"/>
+        <rule name="FEFO" description="Saída sempre do lote com vencimento mais próximo" required="true"/>
+      </profiles>
+      <lots>
+        <state color="green">Dentro da validade</state>
+        <state color="yellow">Atenção (próximo de vencer)</state>
+        <state color="red">Vencido</state>
+      </lots>
+      <alerts>
+        <digestWindows>
+          <window>10:00</window>
+          <window>16:00</window>
+        </digestWindows>
+        <defaultRules>
+          <rule appliesTo="itens 72h">D-1 10:00; D-0 10:00</rule>
+          <rule appliesTo="≤5 dias">D-2 10:00</rule>
+          <rule appliesTo="&gt;5 dias">D-3 10:00</rule>
+        </defaultRules>
+      </alerts>
+    </module>
+
+    <module name="ComprasAutomatizadas">
+      <features>
+        <feature>Estoque mínimo por item → entra na Lista de Compras ao atingir mínimo.</feature>
+        <feature>Requisição Interna x Requisição de Compra (botões selecionáveis).</feature>
+        <feature>Envio da lista pelo WhatsApp (deep link ou API).</feature>
+      </features>
+    </module>
+
+    <module name="TarefasEChecklists">
+      <features>
+        <feature>Checklists por praça/turno (mise en place) com marcação rápida.</feature>
+        <feature>Lembretes de produção (ex.: produzir aioli, porcionar massa).</feature>
+      </features>
+    </module>
+
+    <module name="GamificacaoNeutra">
+      <features>
+        <feature>Pontos por ações corretas (registro de lote, baixa FEFO, checklist).</feature>
+        <feature>Ranking semanal por usuário/setor.</feature>
+        <note>Sem definir recompensas no app; gestão decide incentivos.</note>
+      </features>
+    </module>
+
+    <module name="ImportacaoExportacao">
+      <features>
+        <feature>Importar JSON/CSV com perfis de validade e itens.</feature>
+        <feature>Exportar relatórios semanais (vencimentos, desperdício, top alertas, ranking).</feature>
+      </features>
+    </module>
+  </modules>
+
+  <globalRules>
+    <rule>Janelas WhatsApp: 10:00 e 16:00 (digest por setor).</rule>
+    <rule>Itens de 72h produzidos: alertas em D-1 10:00 e D-0 10:00.</rule>
+    <rule>Congelamento pausa cronômetro para bases/molhos/fundos/rotis.</rule>
+    <rule>FEFO obrigatório para saídas de estoque.</rule>
+  </globalRules>
+
+  <uxUi>
+    <architecture>PWA offline-first (IndexedDB/SQLite local) com sincronização.</architecture>
+    <screens>
+      <screen>Vencimentos (Hoje D-0 / Amanhã D-1 / Próximos)</screen>
+      <screen>Registrar (Produção | Abertura | Descongelar | Usar/baixa FEFO)</screen>
+      <screen>Lotes (chips de estado, quantidade, ações rápidas)</screen>
+      <screen>Compras (Mínimos → Lista; enviar WhatsApp)</screen>
+      <screen>Checklists &amp; Tarefas</screen>
+      <screen>Ranking</screen>
+      <screen>Config/Perfis de Validade</screen>
+    </screens>
+    <style>Minimalista, botões grandes, textos claros; gamificado (badges/contadores); sem recompensas.</style>
+  </uxUi>
+
+  <dataModel>
+    <entity name="User">
+      <fields>id, nome, papel, setor, ativo</fields>
+    </entity>
+    <entity name="Item">
+      <fields>id, nome, setor, unidade, perfil_validade_id, minimo, fornecedor_id?</fields>
+    </entity>
+    <entity name="PerfilValidade">
+      <fields>id, item_id?, origem, ponto_partida, shelf_life_value, shelf_life_unit(h/d), lote_obrigatorio, freeze_pause, alertas[offset,time]</fields>
+    </entity>
+    <entity name="Lote">
+      <fields>id, item_id, quantidade, unidade, origem, data_evento, validade_calculada, status, congelado(bool)</fields>
+    </entity>
+    <entity name="Movimento">
+      <fields>id, lote_id, tipo(entrada|saida|ajuste|descarte|congelar|descongelar), quantidade, user_id, timestamp, motivo?</fields>
+    </entity>
+    <entity name="Fornecedor">
+      <fields>id, nome, contato_whatsapp, observacoes</fields>
+    </entity>
+    <entity name="Compra">
+      <fields>id, tipo(requisicao_interna|compra), itens[item_id,qty,unidade], status, criado_por, enviado_para_whatsapp(bool), timestamp</fields>
+    </entity>
+    <entity name="Checklist">
+      <fields>id, nome, setor, itens[texto,obrigatorio], ativo</fields>
+    </entity>
+    <entity name="ChecklistExecucao">
+      <fields>id, checklist_id, data, user_id, itens_marcados[], pontos</fields>
+    </entity>
+    <entity name="Pontos">
+      <fields>id, user_id, motivo, valor, timestamp</fields>
+    </entity>
+    <entity name="AlertaEnviado">
+      <fields>id, tipo, setor, destino, conteudo_resumo, timestamp</fields>
+    </entity>
+    <entity name="Config">
+      <fields>timezone, alert_windows[10:00,16:00], fefo(true)</fields>
+    </entity>
+  </dataModel>
+
+  <businessRules>
+    <rule>Cálculo de validade: data_base (por origem) + shelf_life.</rule>
+    <rule>Alertas por item: 72h → D-1 10:00 &amp; D-0 10:00; ≤5d → D-2 10:00; &gt;5d → D-3 10:00.</rule>
+    <rule>Descongelar: cria/atualiza lote com nova regra (ex.: 48h pós-descongelamento se configurado).</rule>
+    <rule>Baixa FEFO automática; impedir uso de lote vencido (apenas Descarte).</rule>
+    <rule>WhatsApp: enviar resumo por setor nas janelas (D-0, D-1, Próximos) com deep link para o item/lote.</rule>
+  </businessRules>
+
+  <importSchema>
+    <jsonExample><![CDATA[
+{
+  "version": "1.0",
+  "policy": { "fefo": true, "digest_whatsapp": { "times": ["10:00","16:00"] } },
+  "items": [
+    {
+      "item": "Aioli",
+      "setor": "Broiler",
+      "shelf_life": { "geladeira": "3 dias", "freezer": "3 meses" },
+      "alerts": [
+        {"offset": "D-1", "time": "10:00"},
+        {"offset": "D-0", "time": "10:00"}
+      ],
+      "alert_windows": ["10:00","16:00"],
+      "fefo": true,
+      "freeze_pause": true
+    }
+  ]
+}
+    ]]></jsonExample>
+    <note>Aceitar também CSV/Planilha mapeando para o schema acima.</note>
+  </importSchema>
+
+  <whatsappIntegration>
+    <option type="no-server">Deep link: https://wa.me/&lt;numero&gt;?text=&lt;mensagem-urlencode&gt;</option>
+    <option type="server-api">Endpoint backend POST /notify/whatsapp {to, message, context}</option>
+  </whatsappIntegration>
+
+  <endpoints>
+    <endpoint>POST /auth/login</endpoint>
+    <endpoint>GET /items</endpoint>
+    <endpoint>POST /items</endpoint>
+    <endpoint>PATCH /items/:id</endpoint>
+    <endpoint>GET /profiles</endpoint>
+    <endpoint>POST /profiles</endpoint>
+    <endpoint>PATCH /profiles/:id</endpoint>
+    <endpoint>GET /lots</endpoint>
+    <endpoint>POST /lots</endpoint>
+    <endpoint>PATCH /lots/:id (usar|descarte|congelar|descongelar)</endpoint>
+    <endpoint>POST /movements</endpoint>
+    <endpoint>GET /expiries?scope=Today|Tomorrow|Next</endpoint>
+    <endpoint>GET /purchases/list</endpoint>
+    <endpoint>POST /purchases/generate</endpoint>
+    <endpoint>POST /purchases/send_whatsapp</endpoint>
+    <endpoint>GET /checklists</endpoint>
+    <endpoint>POST /checklists</endpoint>
+    <endpoint>POST /checklists/:id/execute</endpoint>
+    <endpoint>GET /ranking?period=weekly</endpoint>
+    <endpoint>GET /reports/waste</endpoint>
+    <endpoint>GET /reports/alerts/top</endpoint>
+    <endpoint>POST /import/json</endpoint>
+    <endpoint>GET /export/json</endpoint>
+  </endpoints>
+
+  <securityAudit>
+    <auth>Usuário/senha ou PIN por dispositivo.</auth>
+    <audit>Trilha em Movimento e AlertaEnviado.</audit>
+    <permissions>Apenas Admin altera perfis/itens; Cozinheiros não editam validade retroativa.</permissions>
+  </securityAudit>
+
+  <nonFunctionals>
+    <architecture>PWA offline-first (IndexedDB/SQLite + sync).</architecture>
+    <i18n>pt-BR padrão.</i18n>
+    <timezone>America/Bahia</timezone>
+    <performance>Ações críticas ≤ 200ms local; sincronização assíncrona.</performance>
+    <accessibility>Botões grandes, alto contraste.</accessibility>
+  </nonFunctionals>
+
+  <acceptanceCriteria>
+    <criterion>FEFO: baixa sempre do lote com menor validade_calculada; remove lote ao zerar.</criterion>
+    <criterion>Alerta 72h: produzindo em t=0, dispara D-1 10:00 e D-0 10:00; aparece no digest 10:00/16:00.</criterion>
+    <criterion>Congelar pausa: item congelado some dos vencimentos; ao descongelar aplica regra pós-descongelamento.</criterion>
+    <criterion>Lista de compras: ao atingir mínimo, item entra na lista; envio WhatsApp monta mensagem com itens+quantidades.</criterion>
+    <criterion>Gamificação: ações somam pontos; ranking semanal ordena corretamente.</criterion>
+  </acceptanceCriteria>
+
+  <testCases>
+    <test>Criar item com perfil 3 dias → produzir → verificar alertas D-1/D-0.</test>
+    <test>Criar dois lotes com datas diferentes → usar → confirmar baixa FEFO.</test>
+    <test>Congelar e descongelar lote → confirmar pausa/retomada do cronômetro.</test>
+    <test>Ultrapassar mínimo (ex.: 5kg) → gerar e enviar lista WhatsApp (deep link).</test>
+    <test>Executar checklist de turno → pontos e ranking atualizados.</test>
+  </testCases>
+
+  <publish>
+    <deliverable>PWA instalável (manifest + service worker).</deliverable>
+    <responsive>Web mobile-first; opcional TWA (Android).</responsive>
+    <env>.env para chaves de WhatsApp/API quando houver.</env>
+  </publish>
+
+  <builderInstructions>
+    <step>Implemente exatamente os módulos, dados e regras descritos.</step>
+    <step>Gere seed com ~20 itens comuns (massas, molhos, bases, hortifruti, confeitaria) e alertas padrão (72h → D-1 + D-0).</step>
+    <step>Entregue código do app (PWA), backend (se necessário), scripts de importação/exportação, arquivo de configuração (timezone/janelas) e testes mínimos.</step>
+    <optionalSeed>Opcional: carregar seed a partir de JSON fornecido pelo usuário (mesmo schema do importSchema).</optionalSeed>
+  </builderInstructions>
+</masterPrompt>

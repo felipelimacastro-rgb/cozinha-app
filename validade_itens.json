@@ -1,0 +1,189 @@
+{
+  "version": "1.0",
+  "policy": {
+    "fefo": true,
+    "digest_whatsapp": { "times": ["10:00", "16:00"] }
+  },
+  "items": [
+    {
+      "item": "Alface higienizada",
+      "setor": "Hortifruti",
+      "shelf_life": { "geladeira": "48 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Rúcula higienizada",
+      "setor": "Hortifruti",
+      "shelf_life": { "geladeira": "48 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Tomate concassé",
+      "setor": "Hortifruti",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Manjericão higienizado",
+      "setor": "Hortifruti",
+      "shelf_life": { "geladeira": "24 horas", "freezer": null },
+      "alerts": [ { "offset": "D-0", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Massa fresca (tagliatelle, ravioli, etc.)",
+      "setor": "Massas",
+      "shelf_life": { "geladeira": "48 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" }, { "offset": "D-0", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Massa de pizza fermentada",
+      "setor": "Massas",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Pão de fermentação natural",
+      "setor": "Massas",
+      "shelf_life": { "geladeira": "48 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Focaccia",
+      "setor": "Massas",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Roti",
+      "setor": "Bases",
+      "shelf_life": { "geladeira": "72 horas", "freezer": "3 meses" },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": true
+    },
+    {
+      "item": "Fundo de legumes",
+      "setor": "Bases",
+      "shelf_life": { "geladeira": "72 horas", "freezer": "3 meses" },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": true
+    },
+    {
+      "item": "Molho de tomate da casa",
+      "setor": "Bases",
+      "shelf_life": { "geladeira": "96 horas", "freezer": "3 meses" },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": true
+    },
+    {
+      "item": "Pesto (sem pasteurizar)",
+      "setor": "Bases",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Aioli / Maionese da casa",
+      "setor": "Preparações Frias",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" }, { "offset": "D-0", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Creme de ricota",
+      "setor": "Preparações Frias",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Caponata de berinjela",
+      "setor": "Preparações Frias",
+      "shelf_life": { "geladeira": "5 dias", "freezer": null },
+      "alerts": [ { "offset": "D-2", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Carpaccio fatiado",
+      "setor": "Preparações Frias",
+      "shelf_life": { "geladeira": "48 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Mousse de chocolate",
+      "setor": "Confeitaria",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Creme de confeiteiro",
+      "setor": "Confeitaria",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Tiramisù",
+      "setor": "Confeitaria",
+      "shelf_life": { "geladeira": "72 horas", "freezer": null },
+      "alerts": [ { "offset": "D-1", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    },
+    {
+      "item": "Massa de bolo assada",
+      "setor": "Confeitaria",
+      "shelf_life": { "geladeira": "5 dias", "freezer": null },
+      "alerts": [ { "offset": "D-2", "time": "10:00" } ],
+      "alert_windows": ["10:00", "16:00"],
+      "fefo": true,
+      "freeze_pause": false
+    }
+  ]
+}
